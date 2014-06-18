@@ -15,7 +15,6 @@ import urllib.request
 import atexit
 import time
 import re
-import sys
 import warnings
 import logging
 try:
@@ -48,9 +47,13 @@ class BaseURLMonitor(object):
 	
 	def open_url(self, URL):
 		"""Returns raw data from given URL."""
-		with urllib.request.urlopen(URL) as f:
-			data = f.read()
-		return data
+		try:
+			with urllib.request.urlopen(URL) as f:
+				data = f.read()
+			return data
+		except Exception as e:
+			logger.warning('Received Exception: {}'.format(e))
+			return None
 		
 	def execute(self):
 		"""Should be overridden by child class."""
@@ -70,7 +73,7 @@ class BaseURLMonitor(object):
 		except KeyboardInterrupt:
 			logger.warning('Keyboard interrupt detected, stopping.')
 
-class VisualAlertHueController(object):
+class HueController(object):
 	
 	"""Main controller object. """
 	
@@ -99,6 +102,9 @@ class VisualAlertHueController(object):
 				self.IP = self.get_bridge_IP()
 				logger.info('Found IP: {}'.format(self.IP))
 				self.hue = self.connect(self.IP)
+		self.IP = self.get_bridge_IP()
+		logger.info('Found IP: {}'.format(self.IP))
+		self.hue = self.connect(self.IP)
 		
 		self.get_new_lights()
 
