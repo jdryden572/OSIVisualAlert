@@ -36,10 +36,11 @@ class BaseURLMonitor(object):
 	""" Base Class for URL data monitors.  
 	
 	Defines the open_url(URL) method, which returns raw data from 
-	the given URL. The execute() method must be defined by the child 
-	class to perform the desired action.
+	the given URL. 
 	
 	"""
+	
+	checkInterval = 10
 	
 	def __init__(self):
 		"""Constructor.  May be overridden."""		
@@ -53,8 +54,21 @@ class BaseURLMonitor(object):
 		
 	def execute(self):
 		"""Should be overridden by child class."""
-		print('The execute() method must be overridden by child class of BaseURLMonitor!')
-	
+		logger.warning('execute() method has not been overriden!')
+		
+	def run_forever(self):
+		"""Run execute() method repeatedly with delay defined by the 
+		checkInterval attribute"""
+		try:
+			logger.info('Running forever. Hit ^C to interrupt.')
+			while True:
+				tic = time.time()
+				self.execute()
+				toc = time.time()
+				if (toc - tic) < self.checkInterval:	
+					time.sleep(self.checkInterval - (toc - tic))
+		except KeyboardInterrupt:
+			logger.warning('Keyboard interrupt detected, stopping.')
 
 class VisualAlertHueController(object):
 	
@@ -108,6 +122,13 @@ class VisualAlertHueController(object):
 		return hue
 	
 	def get_bridge_IP(self):
+		"""Attempts to automatically find a Hue Bridge on the network.
+		
+		Hue Bridges automatically upload their IP address daily to a Philips
+		database.  Accessing http://www.meethue.com/api/nupnp returns a list 
+		of Hue Bridges connected to the network you are connecting from.
+		
+		"""
 		with urllib.request.urlopen('http://www.meethue.com/api/nupnp') as connection:
 			data = str(connection.read())
 		ipPatternCompiled = re.compile(r'(\d+\.\d+\.\d+\.\d+)')
@@ -121,10 +142,11 @@ class VisualAlertHueController(object):
 	def get_new_lights(self):
 		"""Instructs the Hue Bridge to search for new Hue lights.
 	
-		The 'find new lights' function appears to be unsupported by the phue module. 
-		This function will instruct the bridge to search for and add any new hue lights. 
-		Searching continues for 1 minute and is only capable of locating up 
-		to 15 new lights. To add additional lights, the command must be run again.
+		The 'find new lights' function appears to be unsupported by the phue 
+		module.  This function will instruct the bridge to search for and add
+		any new hue lights.  Searching continues for 1 minute and is only 
+		capable of locating up to 15 new lights. To add additional lights, 
+		the command must be run again.
 		"""
 		logger.info('Instructing Bridge to search for new lights.')
 		connection = requests.post('http://' + self.IP + '/api/' + self.userName + '/lights')
@@ -132,6 +154,7 @@ class VisualAlertHueController(object):
 		connection.close()
 		
 	def set_state(self, state):
+		"""Accepts a state (type: dictionary) and applies it to all Hue lights."""
 		logger.info('Setting lights to {}'.format(state))
 		response = self.hue.set_group(0, state)
 		logger.info(response)
