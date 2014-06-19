@@ -1,5 +1,5 @@
 """
-visualhue
+huecontroller
 
 Brett Nelson and James Dryden
 OSIsoft, LLC
@@ -26,8 +26,8 @@ try:
 except:
 	exit('The phue module must be installed. Visit https://github.com/studioimaginaire/phue')
 
-logging.basicConfig(level=logging.DEBUG) # REMOVE THIS FOR PRODUCTION
-logger = logging.getLogger('visualhue')
+#logging.basicConfig(level=logging.INFO) # REMOVE THIS FOR PRODUCTION
+logger = logging.getLogger('huecontroller')
 	
 
 class BaseURLMonitor(object):
@@ -161,11 +161,7 @@ class HueController(object):
 		
 	def set_state(self, state):
 		"""Accepts a state (type: dictionary) and applies it to all Hue lights."""
-		logger.info('Setting lights to {}'.format(state))
+		logger.debug('Setting lights to {}'.format(state))
 		response = self.hue.set_group(0, state)
-		logger.info(response)
+		logger.debug(response)
 	
-	
-	
-	
-		

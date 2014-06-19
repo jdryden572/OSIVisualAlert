@@ -3,17 +3,16 @@ import re
 import sys
 import logging
 import time
+import atexit
 
 args = set(sys.argv)
 if '-d' in args or '--debug' in args:
-	logging.basicConfig(logging.DEBUG)
+	logging.basicConfig(level=logging.DEBUG)
 elif '-i' in args or '--info' in args:
-	logging.basicConfig(logging.INFO)
+	logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('TSPhillyVisualAlert')
 
 phoneQueueConfig = {
-'pageURL': 'http://osi-cc100:9080/stats',
-'callPattern': r'(\d*) CALLS WAITING FOR (\d*):(\d*)',
 'lightStates': 
 	{
 	'red': 			{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.8, 0.3]},
@@ -48,6 +47,11 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		self.callPatternCompiled = re.compile(callPattern)
 		self.states = phoneQueueConfig['lightStates']
 		self.controller = controller
+		self.standby = False
+		self.state = None
+		self.failCount = 0
+		self.checkInterval = controllerConfig['delayTime']
+		self.maxDisconnectTime = controllerConfig['maxDisconnectTime']
 		
 	def get_phone_data(self):
 		"""Gets the state of the North America English tech support phone
@@ -56,6 +60,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		Returns calls, timeSeconds, connectionFailed
 		"""
 		
+		logger.debug('Accessing source URL...')		
 		rawData = str(self.open_url(self.URL))
 		try:
 			calls, minutes, seconds = self.callPatternCompiled.search(rawData).groups()
@@ -63,6 +68,8 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			logger.warning('CANNOT CONNECT TO PHONE QUEUE STATUS PAGE')
 			logger.warning('URL: {} Check network connection and destination URL.'.format(self.URL))
 			return None, None, True
+		logger.debug('Success.')
+		logger.info(' {0:s} calls waiting for {1:s}:{2:s}'.format(calls, minutes, seconds))
 		timeSeconds = int(minutes)*60 + int(seconds)
 		return int(calls), timeSeconds, False
 	
@@ -74,7 +81,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		timePoints = waitTime // 60
 		return callPoints + timePoints
 	
-	def determine_state(points, connectionFailure):
+	def determine_state(self, points, connectionFailure):
 		"""Choose the Hue light state based on the point count and whether the 
 		connection has been lost.
 		"""
@@ -103,8 +110,44 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		return (isWeekday and is7to7) or (not isWeekday and is11to8)
 		
 	def execute(self):
-		if not is_operating_hours():
+		if not self.is_operating_hours():
 			logger.info('Not during office hours. Lights off.')
-			self.hue.set_state(self.states['allOff'])
+			self.state = self.states['allOff']
+			self.controller.set_state(self.state)
+			self.standby = True
+			time.sleep(30)
 			return
+		if self.standby:
+			self.state = self.states['allOn']
+			self.controller.set_state(self.state)
+			self.standby = False
+			return
+		calls, time, connectFailed = self.get_phone_data()
+		if connectFailed:
+			self.failCount += 1
+		connectionFailure = self.failCount * self.checkInterval >= self.maxDisconnectTime
+		points = self.calculate_points(calls, time)
+		newState = self.determine_state(points, connectionFailure)
+		logger.debug('New state: {}'.format(str(newState)))
+		if newState != self.state:
+			self.state = newState
+			logger.info('Setting state: {}'.format(str(self.state)))
+			self.controller.set_state(self.state)
+	
+	def reset_lights(self):
+		try:
+			self.state = self.states['allOff']
+			self.controller.set_state(self.state)
+		except:
+			pass
+			
+if __name__ == '__main__':
+	import huecontroller
+	controller = huecontroller.HueController(username=controllerConfig['userName'])
+	monitor = PhoneStatusMonitor(controller)
+	atexit.register(monitor.reset_lights)
+	monitor.run_forever()
+	
+	
+		
 		
