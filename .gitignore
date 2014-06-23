@@ -1,3 +1,6 @@
+*.pyc
+__pycache__
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -35,4 +38,3 @@ Icon
 .Spotlight-V100
 .Trashes
 
-*.pyc
