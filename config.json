@@ -1,0 +1,84 @@
+{
+    "maxDisconnectTime": 15,
+    "userName": "ositechsupport",
+    "ipPattern": "(\\d+\\.\\d+\\.\\d+\\.\\d+)",
+    "lightStates": {
+        "allOff": {
+            "on": false
+        },
+        "white": {
+            "on": true,
+            "bri": 50,
+            "ct": 200,
+            "sat": 255,
+            "transitiontime": 2
+        },
+        "yellow": {
+            "on": true,
+            "bri": 150,
+            "sat": 255,
+            "xy": [
+                0.55,
+                0.46
+            ],
+            "transitiontime": 4
+        },
+        "noConnect": {
+            "on": true,
+            "bri": 150,
+            "effect": "colorloop",
+            "sat": 255,
+            "transitiontime": 4
+        },
+        "red": {
+            "on": true,
+            "bri": 150,
+            "sat": 255,
+            "xy": [
+                0.8,
+                0.3
+            ],
+            "transitiontime": 4
+        },
+        "redAlert": {
+            "bri": 150,
+            "sat": 255,
+            "transitiontime": 4,
+            "on": true,
+            "alert": "lselect",
+            "xy": [
+                0.8,
+                0.3
+            ]
+        },
+        "green": {
+            "on": true,
+            "bri": 100,
+            "sat": 255,
+            "xy": [
+                0.5,
+                0.8
+            ],
+            "transitiontime": 4
+        },
+        "orange": {
+            "on": true,
+            "bri": 150,
+            "sat": 255,
+            "xy": [
+                0.6,
+                0.4
+            ],
+            "transitiontime": 4
+        },
+        "allOn": {
+            "on": true,
+            "bri": 50,
+            "ct": 250,
+            "sat": 255,
+            "transitiontime": 2
+        }
+    },
+    "delayTime": 1,
+    "manualBridgeIP": null
+}

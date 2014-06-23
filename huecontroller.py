@@ -39,11 +39,10 @@ class BaseURLMonitor(object):
 	
 	"""
 	
-	checkInterval = 10
-	
-	def __init__(self):
+	def __init__(self, controller):
 		"""Constructor.  May be overridden."""		
-		pass
+		self.controller = controller
+		self.standby = False
 	
 	def open_url(self, URL):
 		"""Returns raw data from given URL."""
@@ -59,17 +58,21 @@ class BaseURLMonitor(object):
 		"""Should be overridden by child class."""
 		logger.warning('execute() method has not been overriden!')
 		
-	def run_forever(self):
+	def run_forever(self, interval=None):
 		"""Run execute() method repeatedly with delay defined by the 
 		checkInterval attribute"""
+		if interval:
+			checkInterval = interval
+		else:
+			checkInterval = 15
 		try:
 			logger.info('Running forever. Hit ^C to interrupt.')
 			while True:
 				tic = time.time()
-				self.execute()
+				self.standby = self.execute()
 				toc = time.time()
-				if (toc - tic) < self.checkInterval:	
-					time.sleep(self.checkInterval - (toc - tic))
+				if (not self.standby) and (toc - tic) < checkInterval:	
+					time.sleep(checkInterval - (toc - tic))
 		except KeyboardInterrupt:
 			logger.warning('Keyboard interrupt detected, stopping.')
 
@@ -156,12 +159,16 @@ class HueController(object):
 		"""
 		logger.info('Instructing Bridge to search for new lights.')
 		connection = requests.post('http://' + self.IP + '/api/' + self.userName + '/lights')
-		logger.info(connection.text)
+		logger.debug(connection.text)
 		connection.close()
 		
 	def set_state(self, state):
 		"""Accepts a state (type: dictionary) and applies it to all Hue lights."""
 		logger.debug('Setting lights to {}'.format(state))
-		response = self.hue.set_group(0, state)
-		logger.debug(response)
+		try:
+			response = self.hue.set_group(0, state)
+			logger.debug(response)
+		except Exception as e:
+			logger.error('Received Exception, {}'.format(e))
+			logger.error('Unable to connect to Hur Bridge. Check network connection.')
 	
