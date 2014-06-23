@@ -12,6 +12,8 @@ if '-d' in args or '--debug' in args:
 	logging.basicConfig(level=logging.DEBUG)
 elif '-i' in args or '--info' in args:
 	logging.basicConfig(level=logging.INFO)
+else:
+	logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('TSPhillyVisualAlert')
 
 config = {
