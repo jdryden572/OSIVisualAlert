@@ -18,10 +18,10 @@ config = {
 	'lightStates': 
 		{
 		'red': 			{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.8, 0.3]},
-		'orange': 		{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.6, 0.4]},
+		'orange': 		{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.7, 0.4]},
 		'yellow':		{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.55, 0.46]},
-		'green':		{'on': True, 'bri': 100, 'sat': 255, 'transitiontime': 4, 'xy': [0.5, 0.8]},
-		'white':		{'on': True, 'bri':  50, 'sat': 255, 'transitiontime': 2, 'ct': 200},
+		'greenYellow':	{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.7, 0.7]}
+		'green':		{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.5, 0.8]},
 		'allOn':		{'on': True, 'bri':  50, 'sat': 255, 'transitiontime': 2, 'ct': 250},
 		'noConnect':	{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'effect': 'colorloop'},
 		'allOff':		{'on': False},
@@ -110,14 +110,14 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			return self.states['noConnect']
 		elif points == 0:
 			return self.states['green']
-		elif points >= 0 and points < 5:
+		elif points >= 0 and points < 4:
+			return self.states['greenYellow']
+		elif points >= 4 and points < 7:
 			return self.states['yellow']
-		elif points >= 5 and points < 8:
+		elif points >= 7 and points < 9:
 			return self.states['orange']
-		elif points >= 8 and points < 11:
+		elif points >= 9:
 			return self.states['red']
-		elif points >= 11:
-			return self.states['redAlert']
 		
 	def is_operating_hours(self):
 		"""Determines whether the the time is currently during office hours.
