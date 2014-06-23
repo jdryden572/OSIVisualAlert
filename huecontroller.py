@@ -17,10 +17,6 @@ import time
 import re
 import warnings
 import logging
-try:
-	import requests
-except:
-	exit('The requests module must be installed. Try "pip install requests"')
 try: 
 	import phue
 except:
@@ -83,6 +79,7 @@ class HueController(object):
 	def __init__(self, ip=None, username=None):
 		""" Initialization function.
 		
+		ip : string (dotted quad), optional
 		userName : string, optional
 		
 		Will attempt to find Bridge IP automatically and connect.  Will 
@@ -158,8 +155,11 @@ class HueController(object):
 		the command must be run again.
 		"""
 		logger.info('Instructing Bridge to search for new lights.')
-		connection = requests.post('http://' + self.IP + '/api/' + self.userName + '/lights')
-		logger.debug(connection.text)
+		url = 'http://' + self.IP + '/api/' + self.userName + '/lights'
+		req = urllib.request.Request(url, method='POST')
+		with urllib.request.urlopen(req) as connection:
+			response = connection.read()
+		logger.debug(response)
 		connection.close()
 		
 	def set_state(self, state):

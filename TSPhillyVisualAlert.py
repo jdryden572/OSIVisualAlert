@@ -52,7 +52,7 @@ else:
 
 class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 	"""
-	Monitors the Tech Support phone queues and sends light state commands
+	Monitors the Tech Support phone queue and sends light state commands
 	to the HueController.
 	
 	"""
@@ -63,8 +63,6 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		callPattern = r'(\d*) CALLS WAITING FOR (\d*):(\d*)'
 		self.callPatternCompiled = re.compile(callPattern)
 		self.states = config['lightStates']
-		#self.controller = controller
-		self.standby = False
 		self.state = None
 		self.status = ''
 		self.failCount = 0
@@ -130,6 +128,8 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		return (isWeekday and is7to7) or (not isWeekday and is11to8)
 		
 	def execute(self):
+		"""Main function. Calls the get_phone_data, calculate_points, and determine_state 
+		functions.  Then passes the selected state to the hue controller."""
 		if not self.is_operating_hours():
 			print(1)
 			logger.info('Not during office hours. Lights off.')
@@ -161,6 +161,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		return self.standby
 	
 	def reset_lights(self):
+		"""Action to be performed when the program is terminated.  Turns off the lights."""
 		try:
 			self.state = self.states['allOff']
 			self.controller.set_state(self.state)
