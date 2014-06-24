@@ -108,6 +108,9 @@ class HueController(object):
 		
 		if self.hue:
 			self.get_new_lights()
+		else:
+			logger.critical('Unable to connect to Bridge.')
+			exit('Quitting.')
 
 	def connect(self, IP):
 		"""Attempts to connect to Bridge"""
@@ -153,14 +156,17 @@ class HueController(object):
 			return match.group(1)
 			
 	def post_user(self):
+		"""Sends POST request to Hue Bridge to register a username and program."""
 		url = 'http://' + self.IP + '/api' 
-		r = json.dumps({'devicetype':'OSIVisualAlert', 'username':self.userName}).encode('utf-8')
+		r = json.dumps({'devicetype':'Python Hue Controller', 'username':self.userName}).encode('utf-8')
 		req = urllib.request.Request(url, data=r, method='POST')
 		with urllib.request.urlopen(req) as connection:
 			response = connection.read()	
 		return json.loads(str(response, encoding='utf-8'))	
 
 	def register_user(self):
+		"""Registers a username with the Philips hue. Will prompt user to push
+		the link button on the Bridge if needed."""
 		response = self.post_user()
 		for line in response:
 			for key in line:
@@ -206,5 +212,5 @@ class HueController(object):
 			logger.debug(response)
 		except Exception as e:
 			logger.error('Received Exception, {}'.format(e))
-			logger.error('Unable to connect to Hur Bridge. Check network connection.')
+			logger.error('Unable to connect to Hue Bridge. Check network connection.')
 	
