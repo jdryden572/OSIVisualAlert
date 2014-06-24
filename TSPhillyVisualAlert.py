@@ -110,7 +110,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			return self.states['noConnect']
 		elif points == 0:
 			return self.states['green']
-		elif points >= 0 and points < 4:
+		elif points >  0 and points < 4:
 			return self.states['greenYellow']
 		elif points >= 4 and points < 7:
 			return self.states['yellow']

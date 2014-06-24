@@ -14,6 +14,7 @@ Philips Electronics N.V. See www.meethue.com for more information.
 import urllib.request
 import atexit
 import time
+import json
 import re
 import warnings
 import logging
@@ -22,7 +23,6 @@ try:
 except:
 	exit('The phue module must be installed. Visit https://github.com/studioimaginaire/phue')
 
-#logging.basicConfig(level=logging.INFO) # REMOVE THIS FOR PRODUCTION
 logger = logging.getLogger('huecontroller')
 	
 
@@ -106,26 +106,33 @@ class HueController(object):
 		logger.info('Found IP: {}'.format(self.IP))
 		self.hue = self.connect(self.IP)
 		
-		self.get_new_lights()
+		if self.hue:
+			self.get_new_lights()
 
 	def connect(self, IP):
 		"""Attempts to connect to Bridge"""
-		if self.userName:
-			hue = phue.Bridge(ip=IP, username=self.userName)
-		else: 
-			hue = phue.Bridge(ip=IP, username='newdeveloper')
+		if not self.userName: 
+			self.userName = 'newdeveloper'
+		hue = phue.Bridge(ip=IP, username=self.userName)
 		try:
 			test = hue.get_api()
+			logger.info('Found Bridge at {0}'.format(IP))
+			if isinstance(test, dict):
+				return hue
+			elif isinstance(test, list):
+				logger.warning(
+					'Username unregistered. Attempting to register username "{}"'.format(
+						self.userName))
+				connected = self.register_user()
+				if connected:
+					logger.warning('Username "{}" successfully registered.'.format(
+						self.userName))
+					return hue
+				else:
+					logger.critical('Unable to register with hue. Attempt manual registration.')
+					return None	
 		except: 
 			return None
-		for line in test:
-			for key in line:
-				if 'error' in key:
-					logger.warning('Found Bridge at {0}'.format(IP)) 
-					logger.warning('Access denied to Bridge, make sure username is registered!')
-					logger.warning(str(test))
-					exit('Quitting.')
-		return hue
 	
 	def get_bridge_IP(self):
 		"""Attempts to automatically find a Hue Bridge on the network.
@@ -144,7 +151,36 @@ class HueController(object):
 			exit('Quitting.')
 		else: 
 			return match.group(1)
-					
+			
+	def post_user(self):
+		url = 'http://' + self.IP + '/api' 
+		r = json.dumps({'devicetype':'OSIVisualAlert', 'username':self.userName}).encode('utf-8')
+		req = urllib.request.Request(url, data=r, method='POST')
+		with urllib.request.urlopen(req) as connection:
+			response = connection.read()	
+		return json.loads(str(response, encoding='utf-8'))	
+
+	def register_user(self):
+		response = self.post_user()
+		for line in response:
+			for key in line:
+				if 'success' in key:
+					return True
+				if 'error' in key:
+					errorType = line['error']['type']
+					if errorType == 101:
+						logger.warning(
+							'Bridge link button has not been pressed.')
+						logger.warning(
+							'Press the link button and hit enter to continue.')
+						input()
+						return self.register_user()
+					else:
+						logger.critical(
+							'Error registering username. Error type: {}'.format(
+								errorType))
+						return False
+		
 	def get_new_lights(self):
 		"""Instructs the Hue Bridge to search for new Hue lights.
 	
