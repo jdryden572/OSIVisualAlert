@@ -1,0 +1,76 @@
+{
+    "lightStates": {
+        "noConnect": {
+            "effect": "colorloop",
+            "transitiontime": 4,
+            "on": true,
+            "bri": 150,
+            "sat": 255
+        },
+        "allOn": {
+            "transitiontime": 2,
+            "ct": 250,
+            "on": true,
+            "bri": 50,
+            "sat": 255
+        },
+        "allOff": {
+            "on": false
+        },
+        "red": {
+            "transitiontime": 4,
+            "xy": [
+                0.8,
+                0.3
+            ],
+            "on": true,
+            "bri": 200,
+            "sat": 255
+        },
+        "green": {
+            "transitiontime": 4,
+            "xy": [
+                0.5,
+                0.8
+            ],
+            "on": true,
+            "bri": 150,
+            "sat": 255
+        },
+        "yellow": {
+            "transitiontime": 4,
+            "xy": [
+                0.55,
+                0.46
+            ],
+            "on": true,
+            "bri": 200,
+            "sat": 255
+        },
+        "orange": {
+            "transitiontime": 4,
+            "xy": [
+                0.7,
+                0.4
+            ],
+            "on": true,
+            "bri": 200,
+            "sat": 255
+        },
+        "greenYellow": {
+            "transitiontime": 4,
+            "xy": [
+                0.7,
+                0.7
+            ],
+            "on": true,
+            "bri": 200,
+            "sat": 255
+        }
+    },
+    "delayTime": 1,
+    "userName": "ositechsupport",
+    "manualBridgeIP": null,
+    "maxDisconnectTime": 15,
+    "ipPattern": "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+}
