@@ -30,7 +30,6 @@ config = {
 		},
 	'delayTime': 1,
 	'maxDisconnectTime': 15,
-	'ipPattern': r'(\d+\.\d+\.\d+\.\d+)',
 	'manualBridgeIP': None,
 	'userName': 'ositechsupport'
 }
@@ -154,7 +153,6 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			self.failCount = 0
 		connectionFailure = self.failCount * self.checkInterval >= self.maxDisconnectTime
 		newState = self.determine_state(points, connectionFailure)
-		logger.debug('New state: {}'.format(str(newState)))
 		if newState != self.state:
 			self.state = newState
 			logger.debug('Setting state: {}'.format(str(self.state)))
@@ -171,7 +169,8 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			
 if __name__ == '__main__':
 	import huecontroller
-	controller = huecontroller.HueController(username=config['userName'])
+	controller = huecontroller.HueController(
+		ip=config['manualBridgeIP'], username=config['userName'])
 	monitor = PhoneStatusMonitor(controller)
 	monitor.run_forever(interval=monitor.checkInterval)
 	

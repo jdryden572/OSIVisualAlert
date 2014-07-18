@@ -17,6 +17,8 @@ else:
 logger = logging.getLogger('TSPhillyVisualAlert')
 
 config = {
+	'manualBridgeIP': None,
+	'delayTime': 1,
 	'lightStates': 
 		{
 		'red': 			{'on': True, 'bri': 200, 'sat': 255, 'transitiontime': 4, 'xy': [0.8, 0.3]},
@@ -25,14 +27,10 @@ config = {
 		'greenYellow':	{'on': True, 'bri': 200, 'sat': 255, 'transitiontime': 4, 'xy': [0.7, 0.7]},
 		'green':		{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.5, 0.8]},
 		'allOn':		{'on': True, 'bri':  50, 'sat': 255, 'transitiontime': 2, 'ct': 250},
-		'noConnect':	{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'effect': 'colorloop'},
+		'noConnect':	{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.6, 0.0]},
+		'alert':		{'on': True, 'xy': [0.8, 0.3], 'alert': 'select'}
 		'allOff':		{'on': False},
-		},
-	'delayTime': 1,
-	'maxDisconnectTime': 15,
-	'ipPattern': r'(\d+\.\d+\.\d+\.\d+)',
-	'manualBridgeIP': None,
-	'userName': 'ositechsupport'
+		}
 }
 
 if os.path.isfile('config.json'):
@@ -67,8 +65,8 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		self.state = None
 		self.status = ''
 		self.failCount = 0
-		self.checkInterval = config['delayTime']
-		self.maxDisconnectTime = config['maxDisconnectTime']
+		self.checkInterval = 1
+		self.maxDisconnectTime = 15
 		atexit.register(self.reset_lights)
 		
 	def get_phone_data(self):
@@ -115,8 +113,10 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			return self.states['yellow']
 		elif points >= 7 and points < 9:
 			return self.states['orange']
-		elif points >= 9:
+		elif points >= 9 and points <11:
 			return self.states['red']
+		elif points >=11:
+			return 'alert'
 		
 	def is_operating_hours(self):
 		"""Determines whether the the time is currently during office hours.
@@ -154,8 +154,11 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			self.failCount = 0
 		connectionFailure = self.failCount * self.checkInterval >= self.maxDisconnectTime
 		newState = self.determine_state(points, connectionFailure)
-		logger.debug('New state: {}'.format(str(newState)))
-		if newState != self.state:
+		if newState == 'alert':
+			self.state = self.states['alert']
+			logger.debug('Setting alert state: {}'.format(str(self.state)))
+			self.controller.set_state(self.state)
+		elif newState != self.state:
 			self.state = newState
 			logger.debug('Setting state: {}'.format(str(self.state)))
 			self.controller.set_state(self.state)
@@ -171,7 +174,8 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			
 if __name__ == '__main__':
 	import huecontroller
-	controller = huecontroller.HueController(username=config['userName'])
+	controller = huecontroller.HueController(
+		ip=config['manualBridgeIP'], username='ositechsupport')
 	monitor = PhoneStatusMonitor(controller)
 	monitor.run_forever(interval=monitor.checkInterval)
 	

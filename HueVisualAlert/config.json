@@ -71,6 +71,5 @@
     "delayTime": 1,
     "userName": "ositechsupport",
     "manualBridgeIP": null,
-    "maxDisconnectTime": 15,
-    "ipPattern": "(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+    "maxDisconnectTime": 15
 }
