@@ -1,73 +1,76 @@
 {
     "manualBridgeIP": null,
-    "delayTime": 1,
+	"delayTime": 1,
     "lightStates": {
-        "noConnect": {
-            "bri": 150,
-            "sat": 255,
-            "effect": "colorloop",
-            "transitiontime": 4,
-            "on": true
-        },
-        "red": {
-            "bri": 200,
-            "sat": 255,
-            "xy": [
-                0.8,
-                0.3
-            ],
-            "transitiontime": 4,
-            "on": true
-        },
-        "allOn": {
-            "bri": 50,
-            "sat": 255,
-            "transitiontime": 2,
-            "ct": 250,
-            "on": true
-        },
-        "orange": {
-            "bri": 200,
-            "sat": 255,
-            "xy": [
-                0.7,
-                0.4
-            ],
-            "transitiontime": 4,
-            "on": true
-        },
         "allOff": {
             "on": false
         },
-        "greenYellow": {
-            "bri": 200,
-            "sat": 255,
-            "xy": [
-                0.7,
-                0.7
-            ],
-            "transitiontime": 4,
-            "on": true
-        },
-        "green": {
-            "bri": 150,
-            "sat": 255,
-            "xy": [
-                0.5,
-                0.8
-            ],
-            "transitiontime": 4,
-            "on": true
-        },
         "yellow": {
-            "bri": 200,
-            "sat": 255,
+            "on": true,
             "xy": [
                 0.55,
                 0.46
             ],
-            "transitiontime": 4,
-            "on": true
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
+        },
+        "orange": {
+            "on": true,
+            "xy": [
+                0.7,
+                0.4
+            ],
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
+        },
+        "noConnect": {
+            "on": true,
+            "xy": [
+                0.6,
+                0.0
+            ],
+            "sat": 255,
+            "bri": 150,
+            "transitiontime": 4
+        },
+        "allOn": {
+            "on": true,
+            "ct": 250,
+            "sat": 255,
+            "bri": 50,
+            "transitiontime": 2
+        },
+        "red": {
+            "on": true,
+            "xy": [
+                0.8,
+                0.3
+            ],
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
+        },
+        "greenYellow": {
+            "on": true,
+            "xy": [
+                0.7,
+                0.7
+            ],
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
+        },
+        "green": {
+            "on": true,
+            "xy": [
+                0.5,
+                0.8
+            ],
+            "sat": 255,
+            "bri": 150,
+            "transitiontime": 4
         }
     }
 }

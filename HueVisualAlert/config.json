@@ -1,75 +1,84 @@
 {
+    "manualBridgeIP": null,
     "lightStates": {
-        "noConnect": {
-            "effect": "colorloop",
-            "transitiontime": 4,
-            "on": true,
-            "bri": 150,
-            "sat": 255
-        },
-        "allOn": {
-            "transitiontime": 2,
-            "ct": 250,
-            "on": true,
-            "bri": 50,
-            "sat": 255
-        },
         "allOff": {
             "on": false
         },
-        "red": {
-            "transitiontime": 4,
-            "xy": [
-                0.8,
-                0.3
-            ],
-            "on": true,
-            "bri": 200,
-            "sat": 255
-        },
-        "green": {
-            "transitiontime": 4,
-            "xy": [
-                0.5,
-                0.8
-            ],
-            "on": true,
-            "bri": 150,
-            "sat": 255
-        },
         "yellow": {
-            "transitiontime": 4,
+            "on": true,
             "xy": [
                 0.55,
                 0.46
             ],
-            "on": true,
+            "sat": 255,
             "bri": 200,
-            "sat": 255
+            "transitiontime": 4
         },
         "orange": {
-            "transitiontime": 4,
+            "on": true,
             "xy": [
                 0.7,
                 0.4
             ],
-            "on": true,
+            "sat": 255,
             "bri": 200,
-            "sat": 255
+            "transitiontime": 4
+        },
+        "noConnect": {
+            "on": true,
+            "xy": [
+                0.6,
+                0.0
+            ],
+            "sat": 255,
+            "bri": 150,
+            "transitiontime": 4
+        },
+        "allOn": {
+            "on": true,
+            "ct": 250,
+            "sat": 255,
+            "bri": 50,
+            "transitiontime": 2
+        },
+        "red": {
+            "on": true,
+            "xy": [
+                0.8,
+                0.3
+            ],
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
         },
         "greenYellow": {
-            "transitiontime": 4,
+            "on": true,
             "xy": [
                 0.7,
                 0.7
             ],
-            "on": true,
+            "sat": 255,
             "bri": 200,
-            "sat": 255
+            "transitiontime": 4
+        },
+        "green": {
+            "on": true,
+            "xy": [
+                0.5,
+                0.8
+            ],
+            "sat": 255,
+            "bri": 150,
+            "transitiontime": 4
+        },
+        "alert": {
+            "on": true,
+            "alert": "select",
+            "xy": [
+                0.8,
+                0.3
+            ]
         }
     },
-    "delayTime": 1,
-    "userName": "ositechsupport",
-    "manualBridgeIP": null,
-    "maxDisconnectTime": 15
+    "delayTime": 1
 }

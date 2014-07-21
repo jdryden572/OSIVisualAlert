@@ -28,8 +28,7 @@ config = {
 		'green':		{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.5, 0.8]},
 		'allOn':		{'on': True, 'bri':  50, 'sat': 255, 'transitiontime': 2, 'ct': 250},
 		'noConnect':	{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.6, 0.0]},
-		'alert':		{'on': True, 'xy': [0.8, 0.3], 'alert': 'select'}
-		'allOff':		{'on': False},
+		'allOff':		{'on': False}
 		}
 }
 
@@ -113,10 +112,8 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			return self.states['yellow']
 		elif points >= 7 and points < 9:
 			return self.states['orange']
-		elif points >= 9 and points <11:
+		elif points >= 9:
 			return self.states['red']
-		elif points >=11:
-			return 'alert'
 		
 	def is_operating_hours(self):
 		"""Determines whether the the time is currently during office hours.
@@ -154,11 +151,7 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			self.failCount = 0
 		connectionFailure = self.failCount * self.checkInterval >= self.maxDisconnectTime
 		newState = self.determine_state(points, connectionFailure)
-		if newState == 'alert':
-			self.state = self.states['alert']
-			logger.debug('Setting alert state: {}'.format(str(self.state)))
-			self.controller.set_state(self.state)
-		elif newState != self.state:
+		if newState != self.state:
 			self.state = newState
 			logger.debug('Setting state: {}'.format(str(self.state)))
 			self.controller.set_state(self.state)
