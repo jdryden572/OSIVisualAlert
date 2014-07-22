@@ -1,5 +1,6 @@
 {
     "manualBridgeIP": null,
+	"delayTime": 1,
     "lightStates": {
         "allOff": {
             "on": false
@@ -70,15 +71,6 @@
             "sat": 255,
             "bri": 150,
             "transitiontime": 4
-        },
-        "alert": {
-            "on": true,
-            "alert": "select",
-            "xy": [
-                0.8,
-                0.3
-            ]
         }
-    },
-    "delayTime": 1
+    }
 }

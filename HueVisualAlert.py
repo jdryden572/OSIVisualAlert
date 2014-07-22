@@ -28,7 +28,6 @@ config = {
 		'green':		{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.5, 0.8]},
 		'allOn':		{'on': True, 'bri':  50, 'sat': 255, 'transitiontime': 2, 'ct': 250},
 		'noConnect':	{'on': True, 'bri': 150, 'sat': 255, 'transitiontime': 4, 'xy': [0.6, 0.0]},
-		'alert':		{'on': True, 'xy': [0.8, 0.3], 'alert': 'select'},
 		'allOff':		{'on': False}
 		}
 }
@@ -62,11 +61,12 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		callPattern = r'(\d*) CALLS WAITING FOR (\d*):(\d*)'
 		self.callPatternCompiled = re.compile(callPattern)
 		self.states = config['lightStates']
-		self.state = None
+		self.state = self.states['allOn']
 		self.status = ''
 		self.failCount = 0
 		self.checkInterval = 1
 		self.maxDisconnectTime = 15
+		self.tic = time.time()
 		atexit.register(self.reset_lights)
 		
 	def get_phone_data(self):
@@ -113,10 +113,8 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			return self.states['yellow']
 		elif points >= 7 and points < 9:
 			return self.states['orange']
-		elif points >= 9 and points <11:
+		elif points >= 9:
 			return self.states['red']
-		elif points >=11:
-			return 'alert'
 		
 	def is_operating_hours(self):
 		"""Determines whether the the time is currently during office hours.
@@ -127,12 +125,19 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 		is7to7		= (7  <= time.localtime()[3] < 19)	# checks if currently between 7am and 7pm
 		is11to8		= (11 <= time.localtime()[3] < 21)	# checks if currently between 11am and 8pm
 		return (isWeekday and is7to7) or (not isWeekday and is11to8)
-		
+	
+	def heartbeat(self):
+		"""Re-issues a set_state command every 10 seconds to ensure that lights 
+		stay updated."""
+		if (time.time() - self.tic) > 10:
+			self.tic = time.time()
+			logger.debug('Heartbeat: refreshing state.')
+			self.controller.set_state(self.state)
+	
 	def execute(self):
 		"""Main function. Calls the get_phone_data, calculate_points, and determine_state 
 		functions.  Then passes the selected state to the hue controller."""
 		if not self.is_operating_hours():
-			print(1)
 			logger.info('Not during office hours. Lights off.')
 			self.state = self.states['allOff']
 			self.controller.set_state(self.state)
@@ -140,7 +145,6 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			time.sleep(10)
 			return self.standby
 		if self.standby:
-			print(2)
 			self.state = self.states['allOn']
 			self.controller.set_state(self.state)
 			self.standby = False
@@ -154,14 +158,12 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 			self.failCount = 0
 		connectionFailure = self.failCount * self.checkInterval >= self.maxDisconnectTime
 		newState = self.determine_state(points, connectionFailure)
-		if newState == 'alert':
-			self.state = self.states['alert']
-			logger.debug('Setting alert state: {}'.format(str(self.state)))
-			self.controller.set_state(self.state)
-		elif newState != self.state:
+		if newState != self.state:
 			self.state = newState
 			logger.debug('Setting state: {}'.format(str(self.state)))
 			self.controller.set_state(self.state)
+		else:
+			self.heartbeat()
 		return self.standby
 	
 	def reset_lights(self):
