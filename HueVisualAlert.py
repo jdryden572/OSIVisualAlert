@@ -1,3 +1,17 @@
+"""
+HueVisualAlert
+
+Brett Nelson and James Dryden
+OSIsoft, LLC
+
+July 2014
+
+An implementation of Philips Hue as a status indicator.
+
+"Hue Personal Wireless Lighting" is a trademark owned by 
+Philips Electronics N.V. See www.meethue.com for more information.
+"""
+
 import huecontroller
 import logging
 import atexit
@@ -16,9 +30,16 @@ else:
 	logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('TSPhillyVisualAlert')
 
+if '--stop' in args:
+	STOP = True
+else:
+	STOP = False
+
 config = {
 	'manualBridgeIP': None,
 	'delayTime': 1,
+	'phoneQueueURL': 'http://osi-cc100:9080/stats',
+	'callPattern': r'(\d*) CALLS WAITING FOR (\d*):(\d*)',
 	'lightStates': 
 		{
 		'red': 			{'on': True, 'bri': 200, 'sat': 255, 'transitiontime': 4, 'xy': [0.8, 0.3]},
@@ -43,7 +64,7 @@ if os.path.isfile('config.json'):
 			logger.warning('config.json may be corrupted. Delete config.json to create default config file.')
 			time.sleep(5)
 else:
-	logger.debug('No config.json file found. Creating one with default values.')
+	logger.warning('No config.json file found. Creating one with default values.')
 	with open('config.json', mode='w') as f:
 		f.write(json.dumps(config, indent=4))
 
@@ -57,14 +78,14 @@ class PhoneStatusMonitor(huecontroller.BaseURLMonitor):
 	
 	def __init__(self, controller):
 		huecontroller.BaseURLMonitor.__init__(self, controller)
-		self.URL = 'http://osi-cc100:9080/stats'
-		callPattern = r'(\d*) CALLS WAITING FOR (\d*):(\d*)'
+		self.URL = config['phoneQueueURL']
+		callPattern = config['callPattern']
 		self.callPatternCompiled = re.compile(callPattern)
 		self.states = config['lightStates']
 		self.state = self.states['allOn']
 		self.status = ''
 		self.failCount = 0
-		self.checkInterval = 1
+		self.checkInterval = config['delayTime']
 		self.maxDisconnectTime = 15
 		self.tic = time.time()
 		atexit.register(self.reset_lights)
@@ -179,7 +200,10 @@ if __name__ == '__main__':
 	controller = huecontroller.HueController(
 		ip=config['manualBridgeIP'], username='ositechsupport')
 	monitor = PhoneStatusMonitor(controller)
-	monitor.run_forever(interval=monitor.checkInterval)
+	if STOP:
+		monitor.controller.set_state(monitor.states['allOff'])
+	else:
+		monitor.run_forever(interval=monitor.checkInterval)
 	
 	
 		

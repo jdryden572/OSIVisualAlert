@@ -1,76 +1,78 @@
-{
-    "manualBridgeIP": null,
-	"delayTime": 1,
+{ 
+	"manualBridgeIP": null,
+    "delayTime": 1,
+    "phoneQueueURL": "http://osi-cc100:9080/stats",
+	"callPattern": "(\\d*) CALLS WAITING FOR (\\d*):(\\d*)",
     "lightStates": {
-        "allOff": {
-            "on": false
-        },
-        "yellow": {
-            "on": true,
-            "xy": [
-                0.55,
-                0.46
-            ],
-            "sat": 255,
-            "bri": 200,
-            "transitiontime": 4
-        },
-        "orange": {
-            "on": true,
-            "xy": [
-                0.7,
-                0.4
-            ],
-            "sat": 255,
-            "bri": 200,
-            "transitiontime": 4
-        },
-        "noConnect": {
-            "on": true,
-            "xy": [
-                0.6,
-                0.0
-            ],
-            "sat": 255,
-            "bri": 150,
-            "transitiontime": 4
-        },
-        "allOn": {
-            "on": true,
-            "ct": 250,
-            "sat": 255,
-            "bri": 50,
-            "transitiontime": 2
-        },
         "red": {
+            "sat": 255,
             "on": true,
+            "bri": 200,
+            "transitiontime": 4,
             "xy": [
                 0.8,
                 0.3
-            ],
-            "sat": 255,
-            "bri": 200,
-            "transitiontime": 4
-        },
-        "greenYellow": {
-            "on": true,
-            "xy": [
-                0.7,
-                0.7
-            ],
-            "sat": 255,
-            "bri": 200,
-            "transitiontime": 4
+            ]
         },
         "green": {
+            "sat": 255,
             "on": true,
+            "bri": 150,
+            "transitiontime": 4,
             "xy": [
                 0.5,
                 0.8
-            ],
+            ]
+        },
+        "noConnect": {
             "sat": 255,
+            "on": true,
             "bri": 150,
-            "transitiontime": 4
+            "transitiontime": 4,
+            "xy": [
+                0.6,
+                0.0
+            ]
+        },
+        "allOff": {
+            "on": false
+        },
+        "orange": {
+            "sat": 255,
+            "on": true,
+            "bri": 200,
+            "transitiontime": 4,
+            "xy": [
+                0.7,
+                0.4
+            ]
+        },
+        "greenYellow": {
+            "sat": 255,
+            "on": true,
+            "bri": 200,
+            "transitiontime": 4,
+            "xy": [
+                0.7,
+                0.7
+            ]
+        },
+        "yellow": {
+            "sat": 255,
+            "on": true,
+            "bri": 200,
+            "transitiontime": 4,
+            "xy": [
+                0.55,
+                0.46
+            ]
+        },
+        "allOn": {
+            "sat": 255,
+            "on": true,
+            "bri": 50,
+            "transitiontime": 2,
+            "ct": 250
         }
     }
 }

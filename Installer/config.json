@@ -1,0 +1,76 @@
+{
+    "manualBridgeIP": "192.168.132.145",
+	"delayTime": 1,
+    "lightStates": {
+        "allOff": {
+            "on": false
+        },
+        "yellow": {
+            "on": true,
+            "xy": [
+                0.55,
+                0.46
+            ],
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
+        },
+        "orange": {
+            "on": true,
+            "xy": [
+                0.7,
+                0.4
+            ],
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
+        },
+        "noConnect": {
+            "on": true,
+            "xy": [
+                0.6,
+                0.0
+            ],
+            "sat": 255,
+            "bri": 150,
+            "transitiontime": 4
+        },
+        "allOn": {
+            "on": true,
+            "ct": 250,
+            "sat": 255,
+            "bri": 50,
+            "transitiontime": 2
+        },
+        "red": {
+            "on": true,
+            "xy": [
+                0.8,
+                0.3
+            ],
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
+        },
+        "greenYellow": {
+            "on": true,
+            "xy": [
+                0.7,
+                0.7
+            ],
+            "sat": 255,
+            "bri": 200,
+            "transitiontime": 4
+        },
+        "green": {
+            "on": true,
+            "xy": [
+                0.5,
+                0.8
+            ],
+            "sat": 255,
+            "bri": 150,
+            "transitiontime": 4
+        }
+    }
+}

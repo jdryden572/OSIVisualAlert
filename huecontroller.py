@@ -4,7 +4,9 @@ huecontroller
 Brett Nelson and James Dryden
 OSIsoft, LLC
 
-An implementation of Philips Hue as a status indicator.
+July 2014
+
+Controller program fo an implementation of Philips Hue as a status indicator.
 
 "Hue Personal Wireless Lighting" is a trademark owned by 
 Philips Electronics N.V. See www.meethue.com for more information.
